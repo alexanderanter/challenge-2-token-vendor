@@ -36,7 +36,7 @@ contract Vendor is Ownable{
     console.log(amountToWithdraw);
 
     (bool success, ) = msg.sender.call{value: amountToWithdraw}("");
-    require( success, "FAILED");
+    require( success, "FAILEDD");
 
   }
  
