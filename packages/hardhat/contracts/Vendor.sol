@@ -21,14 +21,24 @@ contract Vendor is Ownable{
   function buyTokens() public payable {
     uint tokensPurchased = msg.value * tokensPerEth;
     yourToken.transfer(msg.sender, tokensPurchased);
-    
+
     emit BuyTokens(msg.sender, msg.value, tokensPurchased);
 
 
   }
 
   //ToDo: create a sellTokens() function:
+  
 
   //ToDo: create a withdraw() function that lets the owner, you can 
   //use the Ownable.sol import above:
+
+  function withdraw() public onlyOwner {
+
+    (bool success, ) = msg.sender.call{value: address(this).balance}("");
+    require( success, "FAILED");
+
+   
+  
+}
 }
