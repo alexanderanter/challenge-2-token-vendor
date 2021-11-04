@@ -11,7 +11,7 @@ contract YourToken is ERC20 {
     // mapping(address => uint256) public balances;
     
     constructor() public ERC20("ALEX", "ALX") {
-        _mint(msg.sender, 1000000000000000000000);
+        _mint(msg.sender, 10000000000000000000000);
     }
 
 }
