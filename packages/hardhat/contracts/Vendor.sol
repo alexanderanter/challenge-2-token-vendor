@@ -2,6 +2,7 @@ pragma solidity >=0.6.0 <0.7.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./YourToken.sol";
+import "hardhat/console.sol";
 
 contract Vendor is Ownable{
 
@@ -29,7 +30,23 @@ contract Vendor is Ownable{
 
   //ToDo: create a sellTokens() function:
   
+  function sellTokens(uint256 amount) public {
+    //approve the venodor contracts to spend tokens
+    console.log(amount, "amount");
+    console.log(address(this), "address this");
+    yourToken.approve(address(this), amount);
+    yourToken.transfer(address(this), amount);
 
+    uint256 amountToWithdraw = amount / 100;
+    console.log(amountToWithdraw);
+
+    (bool success, ) = msg.sender.call{value: amountToWithdraw}("");
+    require( success, "FAILED");
+
+
+
+
+  }
   //ToDo: create a withdraw() function that lets the owner, you can 
   //use the Ownable.sol import above:
 
