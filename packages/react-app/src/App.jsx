@@ -60,7 +60,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const targetNetwork = NETWORKS.rinkeby; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -483,14 +483,22 @@ function App(props) {
 
   const [tokenBuyAmount, setTokenBuyAmount] = useState();
 
+  const [tokenSellAmount, setTokenSellAmount] = useState();
+
   const ethCostToPurchaseTokens =
     tokenBuyAmount && tokensPerEth && ethers.utils.parseEther("" + tokenBuyAmount / parseFloat(tokensPerEth));
   console.log("ethCostToPurchaseTokens:", ethCostToPurchaseTokens);
+
+  const ethCostToSellTokens =
+    tokenSellAmount && tokensPerEth && ethers.utils.parseEther("" + tokenSellAmount / parseFloat(tokensPerEth));
+  console.log("ethCostToSellTokens:", ethCostToSellTokens);
 
   const [tokenSendToAddress, setTokenSendToAddress] = useState();
   const [tokenSendAmount, setTokenSendAmount] = useState();
 
   const [buying, setBuying] = useState();
+
+  const [selling, setSelling] = useState();
 
   let transferDisplay = "";
   if (yourTokenBalance) {
@@ -521,7 +529,9 @@ function App(props) {
             <Button
               type={"primary"}
               onClick={() => {
-                tx(writeContracts.YourToken.transfer(tokenSendToAddress, ethers.utils.parseEther("" + tokenSendAmount)));
+                tx(
+                  writeContracts.YourToken.transfer(tokenSendToAddress, ethers.utils.parseEther("" + tokenSendAmount)),
+                );
               }}
             >
               Send Tokens
@@ -604,16 +614,59 @@ function App(props) {
               </Card>
             </div>
 
+            <Divider />
+            <div style={{ padding: 8, marginTop: 32, width: 300, margin: "auto" }}>
+              <Card title="Sell Tokens" extra={<a href="#">code</a>}>
+                <div style={{ padding: 8 }}>{tokensPerEth && tokensPerEth.toNumber()} tokens per ETH</div>
+
+                <div style={{ padding: 8 }}>
+                  <Input
+                    style={{ textAlign: "center" }}
+                    placeholder={"amount of tokens to buy"}
+                    value={tokenSellAmount}
+                    onChange={e => {
+                      setTokenSellAmount(e.target.value);
+                    }}
+                  />
+                  <Balance balance={ethCostToSellTokens} dollarMultiplier={price} />
+                </div>
+
+                <div style={{ padding: 8 }}>
+                  <Button
+                    type={"primary"}
+                    loading={selling}
+                    onClick={async () => {
+                      setSelling(true);
+                      await tx(writeContracts.Vendor.approve(ethers.utils.parseEther("" + tokenSellAmount)));
+                      setSelling(false);
+                    }}
+                  >
+                    Approve Tokens
+                  </Button>
+                </div>
+                <div style={{ padding: 8 }}>
+                  <Button
+                    type={"primary"}
+                    loading={selling}
+                    onClick={async () => {
+                      setSelling(true);
+                      await tx(writeContracts.Vendor.sellTokens(ethers.utils.parseEther("" + tokenSellAmount)));
+                      setSelling(false);
+                    }}
+                  >
+                    Sell Tokens
+                  </Button>
+                </div>
+              </Card>
+            </div>
             <div style={{ padding: 8, marginTop: 32 }}>
               <div>Vendor Token Balance:</div>
               <Balance balance={vendorTokenBalance} fontSize={64} />
             </div>
-
             <div style={{ padding: 8 }}>
               <div>Vendor ETH Balance:</div>
               <Balance balance={vendorETHBalance} fontSize={64} /> ETH
             </div>
-
             <div style={{ width: 500, margin: "auto", marginTop: 64 }}>
               <div>Buy Token Events:</div>
               <List
@@ -631,7 +684,6 @@ function App(props) {
                 }}
               />
             </div>
-
             {/*
 
 

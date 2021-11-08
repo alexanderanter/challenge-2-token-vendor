@@ -29,8 +29,8 @@ contract Vendor is Ownable{
     //approve the venodor contracts to spend tokens
     console.log(amount, "amount");
     console.log(address(this), "address this");
-    yourToken.approve(address(this), amount);
-    yourToken.transfer(address(this), amount);
+  
+    yourToken.transferFrom(msg.sender, address(this), amount);
 
     uint256 amountToWithdraw = amount / 100;
     console.log(amountToWithdraw);
@@ -40,6 +40,9 @@ contract Vendor is Ownable{
 
   }
  
+  function approveTokens(uint256 amount) public {
+    yourToken.approve(address(this), amount);
+  }
   function withdraw() public onlyOwner {
 
     (bool success, ) = msg.sender.call{value: address(this).balance}("");
