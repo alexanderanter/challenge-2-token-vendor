@@ -44,10 +44,12 @@ contract Vendor is Ownable{
 
 
     function sellTokens(uint256 amount) public {
-
+      require(amount > 0, "Specify the amount you want to sell");
+      // require(yourToken.balanceOf(msg.sender) >= amount, "You do not have enough tokens to sell");
+      
       require(
           yourToken.allowance(msg.sender, address(this)) >= amount,
-          "Token 1 allowance too low"
+          "Token allowance too low"
       );
       _safeTransferFrom(yourToken, msg.sender, address(this), amount);
   }

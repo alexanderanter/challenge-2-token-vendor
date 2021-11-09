@@ -269,6 +269,9 @@ function App(props) {
   const tokensPerEth = useContractReader(readContracts, "Vendor", "tokensPerEth");
   console.log("🏦 tokensPerEth:", tokensPerEth ? tokensPerEth.toString() : "...");
 
+  const allowedTokenBalance = useContractReader(readContracts, "YourToken", "allowance", [address, vendorAddress]);
+  console.log("🏵 allowedTokenBalance:", allowedTokenBalance ? ethers.utils.formatEther(allowedTokenBalance) : "...");
+
   // const complete = useContractReader(readContracts,"ExampleExternalContract", "completed")
   // console.log("✅ complete:",complete)
   //
@@ -494,6 +497,7 @@ function App(props) {
   console.log("ethCostToSellTokens:", ethCostToSellTokens);
 
   const [tokenSendToAddress, setTokenSendToAddress] = useState();
+
   const [tokenSendAmount, setTokenSendAmount] = useState();
 
   const [buying, setBuying] = useState();
@@ -631,7 +635,7 @@ function App(props) {
                   <Balance balance={ethCostToSellTokens} dollarMultiplier={price} />
                 </div>
 
-                <div style={{ padding: 8 }}>
+                {/* <div style={{ padding: 8 }}>
                   <Button
                     type={"primary"}
                     loading={selling}
@@ -643,12 +647,18 @@ function App(props) {
                   >
                     Approve Tokens
                   </Button>
-                </div>
+                </div> */}
                 <div style={{ padding: 8 }}>
                   <Button
                     type={"primary"}
                     loading={selling}
                     onClick={async () => {
+                      console.log(tokenSellAmount, allowedTokenBalance);
+                      if (tokenSellAmount >= allowedTokenBalance) {
+                        await tx(
+                          writeContracts.YourToken.approve(vendorAddress, ethers.utils.parseEther(tokenSellAmount)),
+                        );
+                      }
                       setSelling(true);
                       await tx(writeContracts.Vendor.sellTokens(ethers.utils.parseEther("" + tokenSellAmount)));
                       setSelling(false);
