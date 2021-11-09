@@ -3,8 +3,10 @@ pragma solidity >=0.6.0 <0.7.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./YourToken.sol";
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract Vendor is Ownable{
+  using SafeMath for uint256;
 
   YourToken yourToken;
 
@@ -25,29 +27,52 @@ contract Vendor is Ownable{
   }
 
   
-  function sellTokens(uint256 amount) public {
-    //approve the venodor contracts to spend tokens
-    console.log(amount, "amount");
-    console.log(address(this), "address this");
+  // function sellTokens(uint256 amount) public {
+  //   //approve the venodor contracts to spend tokens
+  //   console.log(amount, "amount");
+  //   console.log(address(this), "address this");
   
-    yourToken.transferFrom(msg.sender, address(this), amount);
+  //   yourToken.transferFrom(msg.sender, address(this), amount);
 
-    uint256 amountToWithdraw = amount / 100;
-    console.log(amountToWithdraw);
+  //   uint256 amountToWithdraw = amount / 100;
+  //   console.log(amountToWithdraw);
 
-    (bool success, ) = msg.sender.call{value: amountToWithdraw}("");
-    require( success, "FAILEDD");
+  //   (bool success, ) = msg.sender.call{value: amountToWithdraw}("");
+  //   require( success, "FAILEDD");
 
+  // }
+
+
+    function sellTokens(uint256 amount) public {
+
+      require(
+          yourToken.allowance(msg.sender, address(this)) >= amount,
+          "Token 1 allowance too low"
+      );
+      _safeTransferFrom(yourToken, msg.sender, address(this), amount);
   }
+
+  function _safeTransferFrom(
+      IERC20 token,
+      address sender,
+      address recipient,
+      uint amount
+  ) private {
+      bool sent = token.transferFrom(sender, recipient, amount);
+      require(sent, "Token transfer failed");
+  }
+
+
+
  
-  function approveTokens(uint256 amount) public {
-    yourToken.approve(address(this), amount);
+  // function approveTokens(uint256 amount) public {
+  //   yourToken.approve(address(this), amount);
+  // }
+    function withdraw() public onlyOwner {
+
+      (bool success, ) = msg.sender.call{value: address(this).balance}("");
+      require( success, "FAILED");
+
+    
   }
-  function withdraw() public onlyOwner {
-
-    (bool success, ) = msg.sender.call{value: address(this).balance}("");
-    require( success, "FAILED");
-
-  
-}
 }

@@ -622,7 +622,7 @@ function App(props) {
                 <div style={{ padding: 8 }}>
                   <Input
                     style={{ textAlign: "center" }}
-                    placeholder={"amount of tokens to buy"}
+                    placeholder={"amount of tokens "}
                     value={tokenSellAmount}
                     onChange={e => {
                       setTokenSellAmount(e.target.value);
@@ -636,9 +636,9 @@ function App(props) {
                     type={"primary"}
                     loading={selling}
                     onClick={async () => {
-                      setSelling(true);
-                      await tx(writeContracts.Vendor.approve(ethers.utils.parseEther("" + tokenSellAmount)));
-                      setSelling(false);
+                      await tx(
+                        writeContracts.YourToken.approve(vendorAddress, ethers.utils.parseEther(tokenSellAmount)),
+                      );
                     }}
                   >
                     Approve Tokens
