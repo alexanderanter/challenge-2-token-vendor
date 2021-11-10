@@ -14,6 +14,9 @@ contract Vendor is Ownable{
 
   event BuyTokens(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
 
+
+  event SellTokens(address seller, uint256 amountOfETH, uint256 amountOfTokens);
+
   constructor(address tokenAddress) public {
     yourToken = YourToken(tokenAddress);
   }
@@ -43,6 +46,8 @@ contract Vendor is Ownable{
       (bool success, ) = msg.sender.call{value: payout}("");
       require( success, "FAILED");
       _safeTransferFrom(yourToken, msg.sender, address(this), amount);
+
+      emit SellTokens(msg.sender, payout, amount);
   }
 
   function _safeTransferFrom(
