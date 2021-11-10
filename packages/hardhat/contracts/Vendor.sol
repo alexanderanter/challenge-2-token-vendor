@@ -51,6 +51,9 @@ contract Vendor is Ownable{
           yourToken.allowance(msg.sender, address(this)) >= amount,
           "Token allowance too low"
       );
+      uint256 payout = amount / tokensPerEth;
+      (bool success, ) = msg.sender.call{value: payout}("");
+      require( success, "FAILED");
       _safeTransferFrom(yourToken, msg.sender, address(this), amount);
   }
 
