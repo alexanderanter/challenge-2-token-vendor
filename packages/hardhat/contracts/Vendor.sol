@@ -26,23 +26,6 @@ contract Vendor is Ownable{
 
   }
 
-  
-  // function sellTokens(uint256 amount) public {
-  //   //approve the venodor contracts to spend tokens
-  //   console.log(amount, "amount");
-  //   console.log(address(this), "address this");
-  
-  //   yourToken.transferFrom(msg.sender, address(this), amount);
-
-  //   uint256 amountToWithdraw = amount / 100;
-  //   console.log(amountToWithdraw);
-
-  //   (bool success, ) = msg.sender.call{value: amountToWithdraw}("");
-  //   require( success, "FAILEDD");
-
-  // }
-
-
     function sellTokens(uint256 amount) public {
       require(amount > 0, "Specify the amount you want to sell");
       // require(yourToken.balanceOf(msg.sender) >= amount, "You do not have enough tokens to sell");
@@ -72,12 +55,6 @@ contract Vendor is Ownable{
       require(sent, "Token transfer failed");
   }
 
-
-
- 
-  // function approveTokens(uint256 amount) public {
-  //   yourToken.approve(address(this), amount);
-  // }
     function withdraw() public onlyOwner {
 
       (bool success, ) = msg.sender.call{value: address(this).balance}("");
