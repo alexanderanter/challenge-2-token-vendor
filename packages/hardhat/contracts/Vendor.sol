@@ -52,6 +52,11 @@ contract Vendor is Ownable{
           "Token allowance too low"
       );
       uint256 payout = amount / tokensPerEth;
+      //todo make sure the division is safe
+
+      require(address(this).balance >= payout, "not enough ETH in the contract, try later");
+      // should not send user eth before tokens get transferred
+
       (bool success, ) = msg.sender.call{value: payout}("");
       require( success, "FAILED");
       _safeTransferFrom(yourToken, msg.sender, address(this), amount);
